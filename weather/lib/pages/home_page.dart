@@ -1,6 +1,19 @@
+import 'dart:developer';
+
+import 'dart:convert' as convert;
+
+// import 'dart:math';
+// import 'dart:math';
+// import 'dart:developer';
+// import 'dart:math';
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
+import 'package:weather/constants.dart';
 import 'package:weather/pages/citi_page.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
+import '../constants.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, String title}) : super(key: key);
@@ -11,7 +24,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String _celcius = '12';
+  String _citiName = '';
   String _description = "Kuba jyluu kiyin, jamgyr jaait";
+
+  _showWeatherByLocation() async {
+    final position = await _getCurrentLocation();
+    await getWeatherBylocation(position: position);
+
+    // log('position latitude ===>> ${position.latitude}');
+    // log('position longitude ===>> ${position.longitude}');
+  }
 
   Future<Position> _getCurrentLocation() async {
     bool serviceEnabled;
@@ -36,6 +58,29 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     return await Geolocator.getCurrentPosition();
+  }
+
+  getWeatherBylocation({@required Position position}) async {
+    var client = http.Client();
+    try {
+      Uri _uri = Uri.parse(
+          'https://api.openweathermap.org/data/2.5/weather?lat=${position.latitude}&lon=${position.longitude}&appid=$openWeatherMapApiKey');
+      final response = await client.get(_uri);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final body = response.body;
+
+        final _data = convert.jsonDecode(body) as Map<String, dynamic>;
+        // log('_data ==>> $_data');
+        // _celcius = _data['main']['temp'];
+        final cityName = _data['name'];
+        _citiName = cityName;
+        log('Shardyn aty ===> $cityName');
+        final temp = _data['main']['temp'];
+        log('Temp ==>>> $temp');
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   @override
@@ -92,6 +137,18 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             SizedBox(height: _size), // buildka kettii
+            Padding(
+              padding: const EdgeInsets.only(right: 30.0),
+              child: Text(
+                'Bishkek ',
+                style: TextStyle(
+                    fontSize: 100.0,
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(height: _size), // buildka kettii
+
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),

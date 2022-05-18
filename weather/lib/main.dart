@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weather/pages/home_page.dart';
+import 'package:weather/pages/repeat.dart';
+import 'package:weather/pages/test_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,6 +20,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
+      // home: testing(),
+      // home: Repeat(),
     );
   }
 }
